@@ -1,214 +1,189 @@
 // Import required modules
 import express from 'express';
-import mysql from 'mysql';
+import mysql from 'mysql2/promise';
 
 const app = express();
 
-// Set up Express
+// Express setup
 app.set('view engine', 'ejs');
 app.use(express.static('public'));
 app.use(express.urlencoded({ extended: true }));
 
-// Database connection
-const connection = mysql.createConnection({
-  host: 'localhost',
-  user: 'root',
-  password: '',
-  database: 'comics_db'
+// Database connection pool (FROM TEMPLATE – CORRECT)
+const pool = mysql.createPool({
+  host: "y5s2h87f6ur56vae.cbetxkdyhwsb.us-east-1.rds.amazonaws.com",
+  user: "x961annv2rwlrope",
+  password: "yziygibqpk3q352o",
+  database: "c5dhod81zi9fvecy",
+  connectionLimit: 10,
+  waitForConnections: true
 });
 
-// Connect to database
-connection.connect(function(err) {
-  if (err) {
-    console.error('Error connecting to database: ' + err.stack);
-    return;
+// Optional DB test route (can remove later)
+app.get("/dbTest", async (req, res) => {
+  try {
+    const [rows] = await pool.query("SELECT CURDATE()");
+    res.send(rows);
+  } catch (err) {
+    console.error("Database error:", err);
+    res.status(500).send("Database error");
   }
-  console.log('Connected to database');
 });
 
-// HOME PAGE - Display all comic sites and random comic
-app.get('/', function(req, res) {
-  // Get all comic sites
-  const sqlSites = 'SELECT * FROM fe_comic_sites';
-  
-  connection.query(sqlSites, function(err, sites) {
-    if (err) {
-      console.error('Error fetching sites: ' + err);
-      res.send('Error loading page');
-      return;
-    }
-    
-    // Get a random comic
-    const sqlRandomComic = 'SELECT c.*, s.comicSiteName FROM fe_comics c JOIN fe_comic_sites s ON c.comicSiteId = s.comicSiteId ORDER BY RAND() LIMIT 1';
-    
-    connection.query(sqlRandomComic, function(err, randomComic) {
-      if (err) {
-        console.error('Error fetching random comic: ' + err);
-        res.send('Error loading page');
-        return;
-      }
-      
-      res.render('index', { 
-        sites: sites, 
-        randomComic: randomComic[0] 
-      });
+/* =========================
+   ROUTES
+========================= */
+
+// HOME PAGE
+app.get('/', async (req, res) => {
+  try {
+    const [sites] = await pool.query(
+      'SELECT * FROM fe_comic_sites'
+    );
+
+    const [randomComicRows] = await pool.query(
+      `SELECT c.*, s.comicSiteName
+       FROM fe_comics c
+       JOIN fe_comic_sites s ON c.comicSiteId = s.comicSiteId
+       ORDER BY RAND()
+       LIMIT 1`
+    );
+
+    res.render('index', {
+      sites,
+      randomComic: randomComicRows[0]
     });
-  });
+  } catch (err) {
+    console.error(err);
+    res.send('Error loading page');
+  }
 });
 
-// DISPLAY RANDOM COMIC - Reload page with new random comic
-app.post('/randomComic', function(req, res) {
+// RANDOM COMIC
+app.post('/randomComic', (req, res) => {
   res.redirect('/');
 });
 
-// ADD COMIC PAGE - Display form to add new comic
-app.get('/addComic', function(req, res) {
-  // Get all comic sites for dropdown
-  const sqlSites = 'SELECT * FROM fe_comic_sites';
-  
-  connection.query(sqlSites, function(err, sites) {
-    if (err) {
-      console.error('Error fetching sites: ' + err);
-      res.send('Error loading page');
-      return;
-    }
-    
-    res.render('add-comic', { sites: sites });
-  });
+// ADD COMIC PAGE
+app.get('/addComic', async (req, res) => {
+  try {
+    const [sites] = await pool.query(
+      'SELECT * FROM fe_comic_sites'
+    );
+    res.render('add-comic', { sites });
+  } catch (err) {
+    console.error(err);
+    res.send('Error loading page');
+  }
 });
 
-// ADD COMIC - Process form submission
-app.post('/addComic', function(req, res) {
-  // Get form data
-  const comicUrl = req.body.comicUrl;
-  const comicTitle = req.body.comicTitle;
-  const comicSiteId = req.body.comicSiteId;
-  const comicDate = req.body.comicDate;
-  
-  // Insert into database
-  const sql = 'INSERT INTO fe_comics (comicUrl, comicTitle, comicSiteId, comicDate) VALUES (?, ?, ?, ?)';
-  const values = [comicUrl, comicTitle, comicSiteId, comicDate];
-  
-  connection.query(sql, values, function(err, result) {
-    if (err) {
-      console.error('Error adding comic: ' + err);
-      res.send('Error adding comic');
-      return;
-    }
-    
-    // Redirect back to home page
+// ADD COMIC
+app.post('/addComic', async (req, res) => {
+  const { comicUrl, comicTitle, comicSiteId, comicDate } = req.body;
+
+  try {
+    await pool.query(
+      `INSERT INTO fe_comics
+       (comicUrl, comicTitle, comicSiteId, comicDate)
+       VALUES (?, ?, ?, ?)`,
+      [comicUrl, comicTitle, comicSiteId, comicDate]
+    );
+
     res.redirect('/');
-  });
+  } catch (err) {
+    console.error(err);
+    res.send('Error adding comic');
+  }
 });
 
-// COMIC PAGE - Display all comics for a specific site
-app.get('/comics/:siteId', function(req, res) {
-  const siteId = req.params.siteId;
-  
-  // Get comic site info
-  const sqlSite = 'SELECT * FROM fe_comic_sites WHERE comicSiteId = ?';
-  
-  connection.query(sqlSite, [siteId], function(err, site) {
-    if (err) {
-      console.error('Error fetching site: ' + err);
-      res.send('Error loading page');
-      return;
-    }
-    
-    // Get all comics for this site
-    const sqlComics = 'SELECT * FROM fe_comics WHERE comicSiteId = ?';
-    
-    connection.query(sqlComics, [siteId], function(err, comics) {
-      if (err) {
-        console.error('Error fetching comics: ' + err);
-        res.send('Error loading page');
-        return;
-      }
-      
-      res.render('comic-page', { 
-        site: site[0], 
-        comics: comics 
-      });
+// COMICS BY SITE
+app.get('/comics/:siteId', async (req, res) => {
+  const { siteId } = req.params;
+
+  try {
+    const [siteRows] = await pool.query(
+      'SELECT * FROM fe_comic_sites WHERE comicSiteId = ?',
+      [siteId]
+    );
+
+    const [comics] = await pool.query(
+      'SELECT * FROM fe_comics WHERE comicSiteId = ?',
+      [siteId]
+    );
+
+    res.render('comic-page', {
+      site: siteRows[0],
+      comics
     });
-  });
+  } catch (err) {
+    console.error(err);
+    res.send('Error loading page');
+  }
 });
 
-// VIEW COMMENTS PAGE - Display all comments for a specific comic
-app.get('/comments/:comicId', function(req, res) {
-  const comicId = req.params.comicId;
-  
-  // Get comic info
-  const sqlComic = 'SELECT * FROM fe_comics WHERE comicId = ?';
-  
-  connection.query(sqlComic, [comicId], function(err, comic) {
-    if (err) {
-      console.error('Error fetching comic: ' + err);
-      res.send('Error loading page');
-      return;
-    }
-    
-    // Get all comments for this comic
-    const sqlComments = 'SELECT * FROM fe_comments WHERE comicId = ?';
-    
-    connection.query(sqlComments, [comicId], function(err, comments) {
-      if (err) {
-        console.error('Error fetching comments: ' + err);
-        res.send('Error loading page');
-        return;
-      }
-      
-      res.render('comment', { 
-        comic: comic[0], 
-        comments: comments 
-      });
+// VIEW COMMENTS
+app.get('/comments/:comicId', async (req, res) => {
+  const { comicId } = req.params;
+
+  try {
+    const [comicRows] = await pool.query(
+      'SELECT * FROM fe_comics WHERE comicId = ?',
+      [comicId]
+    );
+
+    const [comments] = await pool.query(
+      'SELECT * FROM fe_comments WHERE comicId = ?',
+      [comicId]
+    );
+
+    res.render('comment', {
+      comic: comicRows[0],
+      comments
     });
-  });
+  } catch (err) {
+    console.error(err);
+    res.send('Error loading page');
+  }
 });
 
-// ADD COMMENT PAGE - Display form to add comment
-app.get('/addComment/:comicId', function(req, res) {
-  const comicId = req.params.comicId;
-  
-  // Get comic info
-  const sql = 'SELECT * FROM fe_comics WHERE comicId = ?';
-  
-  connection.query(sql, [comicId], function(err, comic) {
-    if (err) {
-      console.error('Error fetching comic: ' + err);
-      res.send('Error loading page');
-      return;
-    }
-    
-    res.render('add-comment', { comic: comic[0] });
-  });
+// ADD COMMENT PAGE
+app.get('/addComment/:comicId', async (req, res) => {
+  const { comicId } = req.params;
+
+  try {
+    const [comicRows] = await pool.query(
+      'SELECT * FROM fe_comics WHERE comicId = ?',
+      [comicId]
+    );
+
+    res.render('add-comment', { comic: comicRows[0] });
+  } catch (err) {
+    console.error(err);
+    res.send('Error loading page');
+  }
 });
 
-// ADD COMMENT - Process form submission
-app.post('/addComment', function(req, res) {
-  // Get form data
-  const author = req.body.author;
-  const email = req.body.email;
-  const comment = req.body.comment;
-  const comicId = req.body.comicId;
-  
-  // Insert into database
-  const sql = 'INSERT INTO fe_comments (author, email, comment, comicId) VALUES (?, ?, ?, ?)';
-  const values = [author, email, comment, comicId];
-  
-  connection.query(sql, values, function(err, result) {
-    if (err) {
-      console.error('Error adding comment: ' + err);
-      res.send('Error adding comment');
-      return;
-    }
-    
-    // Redirect back to comic page
-    res.redirect('/comics/' + req.body.siteId);
-  });
+// ADD COMMENT
+app.post('/addComment', async (req, res) => {
+  const { author, email, comment, comicId, siteId } = req.body;
+
+  try {
+    await pool.query(
+      `INSERT INTO fe_comments
+       (author, email, comment, comicId)
+       VALUES (?, ?, ?, ?)`,
+      [author, email, comment, comicId]
+    );
+
+    res.redirect(`/comics/${siteId}`);
+  } catch (err) {
+    console.error(err);
+    res.send('Error adding comment');
+  }
 });
 
-// Start server
+// START SERVER
 const PORT = 3000;
-app.listen(PORT, function() {
-  console.log('Server running on port ' + PORT);
+app.listen(PORT, () => {
+  console.log(`Server running on port ${PORT}`);
 });
