@@ -19,7 +19,7 @@ const pool = mysql.createPool({
   waitForConnections: true
 });
 
-// Optional DB test route (can remove later)
+// to test connection to DB
 app.get("/dbTest", async (req, res) => {
   try {
     const [rows] = await pool.query("SELECT CURDATE()");
@@ -30,9 +30,8 @@ app.get("/dbTest", async (req, res) => {
   }
 });
 
-/* =========================
-   ROUTES
-========================= */
+
+// ROUTES
 
 // HOME PAGE
 app.get('/', async (req, res) => {
@@ -53,7 +52,8 @@ app.get('/', async (req, res) => {
       sites,
       randomComic: randomComicRows[0]
     });
-  } catch (err) {
+  } 
+  catch (err) {
     console.error(err);
     res.send('Error loading page');
   }
