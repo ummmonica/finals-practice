@@ -1,0 +1,35 @@
+<%- include('partials/header') %>
+
+<h2>Comments</h2>
+
+<!-- Display the comic -->
+<div class="comic-display">
+  <h3><%= comic.comicTitle %></h3>
+  <img src="<%= comic.comicUrl %>" alt="<%= comic.comicTitle %>">
+  <p>Date: <%= comic.comicDate %></p>
+</div>
+
+<!-- Display comments -->
+<div class="comments-section">
+  <h3>All Comments</h3>
+  
+  <% if (comments.length === 0) { %>
+    <p>No comments yet.</p>
+  <% } else { %>
+    <% for (let i = 0; i < comments.length; i++) { %>
+      <div class="comment">
+        <p><strong><%= comments[i].author %></strong> (<%= comments[i].email %>)</p>
+        <p><%= comments[i].comment %></p>
+        <hr>
+      </div>
+    <% } %>
+  <% } %>
+</div>
+
+<!-- Back button -->
+<div class="button-container">
+  <a href="/comics/<%= comic.comicSiteId %>" class="btn">Back to Comics</a>
+  <a href="/addComment/<%= comic.comicId %>" class="btn">Add Comment</a>
+</div>
+
+<%- include('partials/footer') %>

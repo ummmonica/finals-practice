@@ -1,0 +1,20 @@
+<%- include('partials/header') %>
+
+<h2><%= site.comicSiteName %> Comics</h2>
+
+<div class="comics-container">
+  <% for (let i = 0; i < comics.length; i++) { %>
+    <div class="comic-item">
+      <h3><%= comics[i].comicTitle %></h3>
+      <img src="<%= comics[i].comicUrl %>" alt="<%= comics[i].comicTitle %>">
+      <p>Date: <%= comics[i].comicDate %></p>
+      
+      <div class="comic-links">
+        <a href="/addComment/<%= comics[i].comicId %>" class="btn">Add Comment</a>
+        <a href="/comments/<%= comics[i].comicId %>" class="btn">View Comments</a>
+      </div>
+    </div>
+  <% } %>
+</div>
+
+<%- include('partials/footer') %>

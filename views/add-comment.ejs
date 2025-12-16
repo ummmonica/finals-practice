@@ -1,0 +1,37 @@
+<%- include('partials/header') %>
+
+<h2>Add Comment</h2>
+
+<!-- Display the comic at top of form -->
+<div class="comic-display">
+  <h3><%= comic.comicTitle %></h3>
+  <img src="<%= comic.comicUrl %>" alt="<%= comic.comicTitle %>">
+</div>
+
+<form action="/addComment" method="POST">
+  <!-- Hidden fields -->
+  <input type="hidden" name="comicId" value="<%= comic.comicId %>">
+  <input type="hidden" name="siteId" value="<%= comic.comicSiteId %>">
+  
+  <div class="form-group">
+    <label for="author">Your Name:</label>
+    <input type="text" name="author" id="author" required>
+  </div>
+  
+  <div class="form-group">
+    <label for="email">Your Email:</label>
+    <input type="email" name="email" id="email" required>
+  </div>
+  
+  <div class="form-group">
+    <label for="comment">Comment:</label>
+    <textarea name="comment" id="comment" rows="5" required></textarea>
+  </div>
+  
+  <div class="button-container">
+    <button type="submit" class="btn">Submit Comment</button>
+    <a href="/comics/<%= comic.comicSiteId %>" class="btn">Cancel</a>
+  </div>
+</form>
+
+<%- include('partials/footer') %>

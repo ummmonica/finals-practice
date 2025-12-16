@@ -1,0 +1,37 @@
+<%- include('partials/header') %>
+
+<h2>Comic Sites</h2>
+
+<!-- List all comic sites -->
+<div class="comic-sites">
+  <% for (let i = 0; i < sites.length; i++) { %>
+    <div class="site-item">
+      <h3>
+        <a href="/comics/<%= sites[i].comicSiteId %>"><%= sites[i].comicSiteName %></a>
+      </h3>
+      <p><a href="<%= sites[i].comicSiteUrl %>" target="_blank"><%= sites[i].comicSiteUrl %></a></p>
+    </div>
+  <% } %>
+</div>
+
+<!-- Add Comic Button -->
+<div class="button-container">
+  <a href="/addComic" class="btn">Add Comic</a>
+</div>
+
+<!-- Random Comic Section -->
+<h2>Random Comic</h2>
+<div id="randomComicContainer">
+  <img src="<%= randomComic.comicUrl %>" alt="<%= randomComic.comicTitle %>">
+  <p><strong><%= randomComic.comicSiteName %></strong></p>
+  <p><%= randomComic.comicTitle %></p>
+</div>
+
+<!-- Display Random Comic Button (reloads page) -->
+<div class="button-container">
+  <form action="/randomComic" method="POST">
+    <button type="submit" class="btn">Display Random Comic</button>
+  </form>
+</div>
+
+<%- include('partials/footer') %>

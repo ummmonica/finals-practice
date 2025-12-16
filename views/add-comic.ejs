@@ -1,0 +1,37 @@
+<%- include('partials/header') %>
+
+<h2>Add New Comic</h2>
+
+<form action="/addComic" method="POST">
+  <div class="form-group">
+    <label for="comicSiteId">Comic Site:</label>
+    <select name="comicSiteId" id="comicSiteId" required>
+      <option value="">-- Select Comic Site --</option>
+      <% for (let i = 0; i < sites.length; i++) { %>
+        <option value="<%= sites[i].comicSiteId %>"><%= sites[i].comicSiteName %></option>
+      <% } %>
+    </select>
+  </div>
+  
+  <div class="form-group">
+    <label for="comicTitle">Comic Title:</label>
+    <input type="text" name="comicTitle" id="comicTitle" required>
+  </div>
+  
+  <div class="form-group">
+    <label for="comicUrl">Comic URL:</label>
+    <input type="text" name="comicUrl" id="comicUrl" required>
+  </div>
+  
+  <div class="form-group">
+    <label for="comicDate">Comic Date:</label>
+    <input type="date" name="comicDate" id="comicDate" required>
+  </div>
+  
+  <div class="button-container">
+    <button type="submit" class="btn">Add Comic</button>
+    <a href="/" class="btn">Cancel</a>
+  </div>
+</form>
+
+<%- include('partials/footer') %>

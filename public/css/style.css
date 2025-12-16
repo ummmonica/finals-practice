@@ -1,0 +1,192 @@
+/* Basic reset and body styling */
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+body {
+  font-family: Arial, sans-serif;
+  line-height: 1.6;
+  padding: 20px;
+}
+
+/* Header styling */
+header {
+  background-color: #333;
+  color: white;
+  padding: 20px;
+  margin-bottom: 20px;
+}
+
+header h1 {
+  margin-bottom: 10px;
+}
+
+header nav a {
+  color: white;
+  text-decoration: none;
+  margin-right: 15px;
+}
+
+/* Main content */
+main {
+  max-width: 1200px;
+  margin: 0 auto;
+}
+
+h2 {
+  margin: 20px 0;
+  color: #333;
+}
+
+h3 {
+  margin: 10px 0;
+  color: #555;
+}
+
+/* Comic sites list */
+.comic-sites {
+  margin: 20px 0;
+}
+
+.site-item {
+  margin-bottom: 20px;
+  padding: 15px;
+  border: 1px solid #ddd;
+  background-color: #f9f9f9;
+}
+
+.site-item a {
+  color: #0066cc;
+  text-decoration: none;
+}
+
+.site-item a:hover {
+  text-decoration: underline;
+}
+
+/* Button styling */
+.btn {
+  display: inline-block;
+  padding: 10px 20px;
+  background-color: #0066cc;
+  color: white;
+  text-decoration: none;
+  border: none;
+  cursor: pointer;
+  margin: 5px;
+}
+
+.btn:hover {
+  background-color: #0052a3;
+}
+
+.button-container {
+  margin: 20px 0;
+}
+
+/* Random comic container */
+#randomComicContainer {
+  margin: 20px 0;
+  padding: 20px;
+  border: 1px solid #ddd;
+  background-color: #f9f9f9;
+}
+
+#randomComicContainer img {
+  max-width: 100%;
+  height: auto;
+  display: block;
+  margin-bottom: 10px;
+}
+
+/* Form styling */
+.form-group {
+  margin-bottom: 15px;
+}
+
+.form-group label {
+  display: block;
+  margin-bottom: 5px;
+  font-weight: bold;
+}
+
+.form-group input,
+.form-group select,
+.form-group textarea {
+  width: 100%;
+  padding: 8px;
+  font-size: 16px;
+  border: 1px solid #ddd;
+}
+
+/* Comics container */
+.comics-container {
+  display: flex;
+  flex-direction: column;
+  gap: 30px;
+}
+
+.comic-item {
+  padding: 20px;
+  border: 1px solid #ddd;
+  background-color: #f9f9f9;
+}
+
+.comic-item img {
+  max-width: 100%;
+  height: auto;
+  display: block;
+  margin: 15px 0;
+}
+
+.comic-links {
+  margin-top: 15px;
+}
+
+/* Comic display */
+.comic-display {
+  margin: 20px 0;
+  padding: 20px;
+  border: 1px solid #ddd;
+  background-color: #f9f9f9;
+}
+
+.comic-display img {
+  max-width: 100%;
+  height: auto;
+  display: block;
+  margin-top: 10px;
+}
+
+/* Comments section */
+.comments-section {
+  margin: 20px 0;
+}
+
+.comment {
+  margin: 15px 0;
+  padding: 15px;
+  background-color: #f9f9f9;
+  border: 1px solid #ddd;
+}
+
+.comment p {
+  margin: 5px 0;
+}
+
+.comment hr {
+  margin: 10px 0;
+  border: none;
+  border-top: 1px solid #ddd;
+}
+
+/* Footer */
+footer {
+  margin-top: 40px;
+  padding: 20px;
+  text-align: center;
+  background-color: #333;
+  color: white;
+}
