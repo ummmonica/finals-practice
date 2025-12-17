@@ -1,20 +1,65 @@
+<!-- 
+  COMIC-PAGE.EJS - DISPLAY ALL COMICS FOR A SPECIFIC SITE
+  This page shows all comic strips from one comic site (e.g., all XKCD comics)
+  
+  Data passed from route:
+  - site: single site object (comicSiteId, comicSiteName, comicSiteUrl)
+  - comics: array of comic objects for this site (comicId, comicTitle, comicUrl, comicDate)
+  
+  Example URL: /comics/2 would show all XKCD comics
+-->
+
+<!-- Include the header partial -->
 <%- include('partials/header') %>
 
+<!-- 
+  Display the site name in the heading
+  Example: "XKCD Comics" or "Dilbert Comics"
+-->
 <h2><%= site.comicSiteName %> Comics</h2>
 
+<!-- Container for all comics -->
 <div class="comics-container">
+  
+  <!-- 
+    Loop through all comics for this site
+    Each comic gets its own .comic-item div
+  -->
   <% for (let i = 0; i < comics.length; i++) { %>
     <div class="comic-item">
+      
+      <!-- Display the comic title -->
       <h3><%= comics[i].comicTitle %></h3>
+      
+      <!-- 
+        Display the comic image
+        - src = URL of the image
+        - alt = alternative text for accessibility
+      -->
       <img src="<%= comics[i].comicUrl %>" alt="<%= comics[i].comicTitle %>">
+      
+      <!-- Display the date this comic was published -->
       <p>Date: <%= comics[i].comicDate %></p>
       
+      <!-- Links for this comic -->
       <div class="comic-links">
+        <!-- 
+          Link to add a comment for this comic
+          Goes to /addComment/:comicId route
+          Example: /addComment/5
+        -->
         <a href="/addComment/<%= comics[i].comicId %>" class="btn">Add Comment</a>
+        
+        <!-- 
+          Link to view all comments for this comic
+          Goes to /comments/:comicId route
+          Example: /comments/5
+        -->
         <a href="/comments/<%= comics[i].comicId %>" class="btn">View Comments</a>
       </div>
     </div>
   <% } %>
 </div>
 
+<!-- Include the footer partial -->
 <%- include('partials/footer') %>

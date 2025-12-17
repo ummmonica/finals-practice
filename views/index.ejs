@@ -1,37 +1,73 @@
+<!-- 
+  INDEX.EJS - HOME PAGE
+  This is the main landing page that displays:
+  1. A list of all comic sites from the database
+  2. A random comic strip
+  3. A button to get a new random comic
+  
+  Data passed from route:
+  - sites: array of comic site objects (comicSiteId, comicSiteName, comicSiteUrl)
+  - randomComic: single comic object (comicId, comicUrl, comicTitle, comicSiteName, etc.)
+-->
+
+<!-- Include the header partial (adds DOCTYPE, head, opening body, header) -->
 <%- include('partials/header') %>
 
+<!-- SECTION 1: Display all comic sites -->
 <h2>Comic Sites</h2>
 
-<!-- List all comic sites -->
+<!-- Container for all comic sites -->
 <div class="comic-sites">
+  <!-- 
+    Loop through all sites using a standard for loop
+    This creates one .site-item div for each site in the database
+  -->
   <% for (let i = 0; i < sites.length; i++) { %>
     <div class="site-item">
       <h3>
+        <!-- 
+          Link to view all comics for this site
+          When clicked, goes to /comics/:siteId route
+          Example: /comics/1 for Savage Chickens
+        -->
         <a href="/comics/<%= sites[i].comicSiteId %>"><%= sites[i].comicSiteName %></a>
       </h3>
+      <!-- Display the site's URL as a link that opens in new tab -->
       <p><a href="<%= sites[i].comicSiteUrl %>" target="_blank"><%= sites[i].comicSiteUrl %></a></p>
     </div>
   <% } %>
 </div>
 
-<!-- Add Comic Button -->
+<!-- SECTION 2: Add Comic button -->
 <div class="button-container">
+  <!-- Link to the add comic form page -->
   <a href="/addComic" class="btn">Add Comic</a>
 </div>
 
-<!-- Random Comic Section -->
+<!-- SECTION 3: Display a random comic -->
 <h2>Random Comic</h2>
 <div id="randomComicContainer">
+  <!-- Display the random comic image -->
   <img src="<%= randomComic.comicUrl %>" alt="<%= randomComic.comicTitle %>">
+  
+  <!-- Display the comic site name in bold -->
   <p><strong><%= randomComic.comicSiteName %></strong></p>
+  
+  <!-- Display the comic title -->
   <p><%= randomComic.comicTitle %></p>
 </div>
 
-<!-- Display Random Comic Button (reloads page) -->
+<!-- SECTION 4: Button to get a new random comic -->
 <div class="button-container">
+  <!-- 
+    Form that submits to /randomComic route
+    When clicked, the page reloads with a new random comic
+    Using POST method and a form (no JavaScript needed)
+  -->
   <form action="/randomComic" method="POST">
     <button type="submit" class="btn">Display Random Comic</button>
   </form>
 </div>
 
+<!-- Include the footer partial (closes main, adds footer, closes body and html) -->
 <%- include('partials/footer') %>

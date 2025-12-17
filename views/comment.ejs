@@ -1,35 +1,77 @@
+<!-- 
+  COMMENT.EJS - VIEW ALL COMMENTS FOR A COMIC
+  This page displays a specific comic and all its comments
+  
+  Data passed from route:
+  - comic: single comic object (comicId, comicTitle, comicUrl, comicSiteId, comicDate)
+  - comments: array of comment objects (commentId, author, email, comment, comicId)
+  
+  Example URL: /comments/5 would show all comments for comic #5
+-->
+
+<!-- Include the header partial -->
 <%- include('partials/header') %>
 
 <h2>Comments</h2>
 
-<!-- Display the comic -->
+<!-- SECTION 1: Display the comic being commented on -->
 <div class="comic-display">
+  <!-- Show which comic these comments are for -->
   <h3><%= comic.comicTitle %></h3>
   <img src="<%= comic.comicUrl %>" alt="<%= comic.comicTitle %>">
   <p>Date: <%= comic.comicDate %></p>
 </div>
 
-<!-- Display comments -->
+<!-- SECTION 2: Display all comments -->
 <div class="comments-section">
   <h3>All Comments</h3>
   
+  <!-- 
+    Check if there are any comments
+    If comments array is empty (length === 0), show "No comments yet"
+  -->
   <% if (comments.length === 0) { %>
     <p>No comments yet.</p>
   <% } else { %>
+    
+    <!-- 
+      If there are comments, loop through and display each one
+      Each comment gets its own .comment div
+    -->
     <% for (let i = 0; i < comments.length; i++) { %>
       <div class="comment">
+        <!-- 
+          Display comment author name in bold and their email in parentheses
+          Example: "John (john@example.com)"
+        -->
         <p><strong><%= comments[i].author %></strong> (<%= comments[i].email %>)</p>
+        
+        <!-- Display the actual comment text -->
         <p><%= comments[i].comment %></p>
+        
+        <!-- Horizontal line to separate comments -->
         <hr>
       </div>
     <% } %>
   <% } %>
 </div>
 
-<!-- Back button -->
+<!-- SECTION 3: Navigation buttons -->
 <div class="button-container">
+  <!-- 
+    Button to go back to the comic page
+    Uses comic.comicSiteId to return to the correct site's page
+    Example: if this comic is from site 2, goes to /comics/2
+  -->
   <a href="/comics/<%= comic.comicSiteId %>" class="btn">Back to Comics</a>
+  
+  <!-- 
+    Button to add a new comment to this comic
+    Goes to the add comment form for this specific comic
+    Example: /addComment/5 for comic #5
+  -->
   <a href="/addComment/<%= comic.comicId %>" class="btn">Add Comment</a>
 </div>
 
+<!-- Include the footer partial -->
 <%- include('partials/footer') %>

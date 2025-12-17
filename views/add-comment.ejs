@@ -1,37 +1,91 @@
+<!-- 
+  ADD-COMMENT.EJS - ADD COMMENT FORM
+  This page displays a form to add a comment to a specific comic
+  The comic is shown at the top so users know what they're commenting on
+  
+  Data passed from route:
+  - comic: single comic object (comicId, comicTitle, comicUrl, comicSiteId, comicDate)
+  
+  Example URL: /addComment/5 would show the form to comment on comic #5
+-->
+
+<!-- Include the header partial -->
 <%- include('partials/header') %>
 
 <h2>Add Comment</h2>
 
-<!-- Display the comic at top of form -->
+<!-- SECTION 1: Display the comic at the top of the form -->
 <div class="comic-display">
+  <!-- Show which comic the user is commenting on -->
   <h3><%= comic.comicTitle %></h3>
   <img src="<%= comic.comicUrl %>" alt="<%= comic.comicTitle %>">
 </div>
 
+<!-- SECTION 2: Comment form -->
+<!-- 
+  Form to submit a comment
+  - action="/addComment" = where form data gets sent
+  - method="POST" = sends data securely
+  When submitted, sends data to POST /addComment route in index.mjs
+-->
 <form action="/addComment" method="POST">
-  <!-- Hidden fields -->
+  
+  <!-- 
+    HIDDEN FIELDS
+    These fields are not visible to the user but get sent with the form
+    They tell the server which comic this comment is for
+  -->
+  <!-- Hidden field with comic ID -->
   <input type="hidden" name="comicId" value="<%= comic.comicId %>">
+  
+  <!-- Hidden field with site ID (needed to redirect back to correct page) -->
   <input type="hidden" name="siteId" value="<%= comic.comicSiteId %>">
   
+  <!-- FIELD 1: Author name -->
   <div class="form-group">
     <label for="author">Your Name:</label>
+    <!-- 
+      Text input for commenter's name
+      - type="text" = regular text input
+      - required = user must fill this in
+    -->
     <input type="text" name="author" id="author" required>
   </div>
   
+  <!-- FIELD 2: Email address -->
   <div class="form-group">
     <label for="email">Your Email:</label>
+    <!-- 
+      Email input - browser validates it's a proper email format
+      - type="email" = validates email format (must have @)
+    -->
     <input type="email" name="email" id="email" required>
   </div>
   
+  <!-- FIELD 3: Comment text -->
   <div class="form-group">
     <label for="comment">Comment:</label>
+    <!-- 
+      Textarea for longer text input (comments)
+      - rows="5" = shows 5 lines of text by default
+      - User can type more and it will scroll
+    -->
     <textarea name="comment" id="comment" rows="5" required></textarea>
   </div>
   
+  <!-- Form buttons -->
   <div class="button-container">
+    <!-- Submit button - sends all form data (including hidden fields) -->
     <button type="submit" class="btn">Submit Comment</button>
+    
+    <!-- 
+      Cancel button - goes back to the comic page
+      Uses the comic's siteId to return to the correct page
+      Example: if comic is from site 2, goes to /comics/2
+    -->
     <a href="/comics/<%= comic.comicSiteId %>" class="btn">Cancel</a>
   </div>
 </form>
 
+<!-- Include the footer partial -->
 <%- include('partials/footer') %>
